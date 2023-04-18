@@ -1,8 +1,19 @@
 package com.shepherdmoney.interviewproject.controller;
 
+import com.shepherdmoney.interviewproject.Exception.BusinessExceptionCode;
+import com.shepherdmoney.interviewproject.Exception.BussinessException;
+import com.shepherdmoney.interviewproject.model.CreditCard;
+import com.shepherdmoney.interviewproject.model.User;
+import com.shepherdmoney.interviewproject.repository.CreditCardRepository;
+import com.shepherdmoney.interviewproject.repository.UserRepository;
+import com.shepherdmoney.interviewproject.service.CreditCardService;
+import com.shepherdmoney.interviewproject.service.UserService;
 import com.shepherdmoney.interviewproject.vo.request.AddCreditCardToUserPayload;
 import com.shepherdmoney.interviewproject.vo.request.UpdateBalancePayload;
 import com.shepherdmoney.interviewproject.vo.response.CreditCardView;
+import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,15 +25,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 public class CreditCardController {
 
-    // TODO: wire in CreditCard repository here (~1 line)
+    // wire in CreditCard repository here (~1 line)
+
+    @Resource
+    CreditCardService creditCardService;
+
+    @Resource
+    UserService userService;
 
     @PostMapping("/credit-card")
     public ResponseEntity<Integer> addCreditCardToUser(@RequestBody AddCreditCardToUserPayload payload) {
-        // TODO: Create a credit card entity, and then associate that credit card with user with given userId
+        //       Create a credit card entity, and then associate that credit card with user with given userId
         //       Return 200 OK with the credit card id if the user exists and credit card is successfully associated with the user
         //       Return other appropriate response code for other exception cases
         //       Do not worry about validating the card number, assume card number could be any arbitrary format and length
-        return null;
+
+        try {
+            String creditCardNum = payload.getCardNumber();
+            int userId = payload.getUserId();
+            String cardIssuanceBank = payload.getCardIssuanceBank();
+            int creditCardId = creditCardService.addCreditCardToUser(userId, creditCardNum, cardIssuanceBank);
+            return new ResponseEntity<Integer>(creditCardId, HttpStatusCode.valueOf(200));
+        }catch (BussinessException e){
+            return new ResponseEntity<Integer>(400, HttpStatusCode.valueOf(400));
+        }
     }
 
     @GetMapping("/credit-card:all")
@@ -39,16 +65,16 @@ public class CreditCardController {
         return null;
     }
 
-    @PostMapping("/credit-card:update-balance")
-    public SomeEnityData postMethodName(@RequestBody UpdateBalancePayload[] payload) {
-        //TODO: Given a list of transactions, update credit cards' balance history.
-        //      For example: if today is 4/12, a credit card's balanceHistory is [{date: 4/12, balance: 110}, {date: 4/10, balance: 100}],
-        //      Given a transaction of {date: 4/10, amount: 10}, the new balanceHistory is
-        //      [{date: 4/12, balance: 120}, {date: 4/11, balance: 110}, {date: 4/10, balance: 110}]
-        //      Return 200 OK if update is done and successful, 400 Bad Request if the given card number
-        //        is not associated with a card.
-        
-        return null;
-    }
+//    @PostMapping("/credit-card:update-balance")
+//    public SomeEnityData postMethodName(@RequestBody UpdateBalancePayload[] payload) {
+//        //TODO: Given a list of transactions, update credit cards' balance history.
+//        //      For example: if today is 4/12, a credit card's balanceHistory is [{date: 4/12, balance: 110}, {date: 4/10, balance: 100}],
+//        //      Given a transaction of {date: 4/10, amount: 10}, the new balanceHistory is
+//        //      [{date: 4/12, balance: 120}, {date: 4/11, balance: 110}, {date: 4/10, balance: 110}]
+//        //      Return 200 OK if update is done and successful, 400 Bad Request if the given card number
+//        //        is not associated with a card.
+//
+//        return null;
+//    }
     
 }
