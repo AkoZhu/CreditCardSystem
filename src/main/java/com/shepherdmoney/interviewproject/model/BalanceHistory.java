@@ -13,14 +13,17 @@ import lombok.ToString;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@Table(name = "BALANCE_HISTORY")
 public class BalanceHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    
+
+    @Column(name = "DATE")
     private Instant date;
 
+    @Column(name = "BALANCE")
     private double balance;
 
     // No foreign key needed here, since we are not querying by credit card

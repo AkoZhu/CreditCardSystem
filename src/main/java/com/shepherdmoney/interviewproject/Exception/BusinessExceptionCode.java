@@ -13,13 +13,19 @@ public enum BusinessExceptionCode {
 
     CARD_DELETE_FAILED("Credit card delete failed."),
 
+    GET_CREDIT_CARDS_FAILED("Get credit cards failed."),
+
     USER_NOT_FOUND("User is not found."),
 
     CREATE_USER_FAILED("Create user failed."),
 
     DELETE_USER_FAILED("Delete user failed."),
 
-    USER_ALREADY_EXIST("User already exists.");
+    USER_ALREADY_EXIST("User already exists."),
+
+    BALANCE_HISTORY_NOT_EXIST("Balance history is not exist."),
+
+    BALANCE_HISTORY_ADD_FAILED("Balance history add failed.");
 
     private String desc;
 

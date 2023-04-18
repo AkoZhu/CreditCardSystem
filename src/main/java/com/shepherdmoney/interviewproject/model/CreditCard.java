@@ -14,14 +14,17 @@ import java.util.List;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@Table(name = "CREDIT_CARD")
 public class CreditCard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
+    @Column(name = "ISSUANCE_BANK")
     private String issuanceBank;
 
+    @Column(name = "NUMBER")
     private String number;
 
     // TODO: Credit card's owner. For detailed hint, please see User class
@@ -43,5 +46,10 @@ public class CreditCard {
     @OneToMany(mappedBy = "creditCard", cascade = CascadeType.ALL)
     private List<BalanceHistory> balanceHistoryList = new ArrayList<>();
 
-
+    public void addBalanceHistory(BalanceHistory balanceHistory) {
+        // Add balance history to the list
+        balanceHistoryList.add(balanceHistory);
+        // Set the credit card
+        balanceHistory.setCreditCard(this);
+    }
 }

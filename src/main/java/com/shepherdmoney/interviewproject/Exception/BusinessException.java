@@ -1,10 +1,10 @@
 package com.shepherdmoney.interviewproject.Exception;
 
-public class BussinessException extends RuntimeException{
+public class BusinessException extends RuntimeException{
 
     private BusinessExceptionCode code;
 
-    public BussinessException (BusinessExceptionCode code){
+    public BusinessException(BusinessExceptionCode code){
         // Set the desc as RuntimeException message.
         super(code.getDesc());
         this.code = code;

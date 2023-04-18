@@ -37,7 +37,7 @@ public class UserController {
         //       Return 400 Bad Request if a user with the ID does not exist
         //       The response body could be anything you consider appropriate
         try{
-            userService.deleteUserById(userId);
+            userService.deleteUser(userId);
             return new ResponseEntity<String>("User deleted", HttpStatusCode.valueOf(200));
         }catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), HttpStatusCode.valueOf(400));

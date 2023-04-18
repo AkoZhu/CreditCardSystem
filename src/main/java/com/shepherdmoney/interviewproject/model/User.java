@@ -15,15 +15,17 @@ import java.util.Map;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Table(name = "MyUser")
+@Table(name = "My_User")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
+    @Column(name = "NAME")
     private String name;
 
+    @Column(name= "EMAIL")
     private String email;
 
     // TODO: User's credit card
