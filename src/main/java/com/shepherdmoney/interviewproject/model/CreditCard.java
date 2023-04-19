@@ -1,5 +1,6 @@
 package com.shepherdmoney.interviewproject.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +25,12 @@ public class CreditCard {
     @Column(name = "ISSUANCE_BANK")
     private String issuanceBank;
 
-    @Column(name = "NUMBER")
+    @Column(name = "NUMBER", unique = true, nullable = false)
     private String number;
 
     // TODO: Credit card's owner. For detailed hint, please see User class
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name="USER_ID", referencedColumnName="ID")
+    @ManyToOne
+    @JoinColumn(name="USER_ID",  referencedColumnName = "ID")
     private User user;
 
     // TODO: Credit card's balance history. It is a requirement that the dates in the balanceHistory 

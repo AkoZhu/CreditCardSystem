@@ -8,6 +8,8 @@ import com.shepherdmoney.interviewproject.vo.request.AddCreditCardToUserPayload;
 import com.shepherdmoney.interviewproject.vo.request.UpdateBalancePayload;
 import com.shepherdmoney.interviewproject.vo.response.CreditCardView;
 import jakarta.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class CreditCardController {
 
     // wire in CreditCard repository here (~1 line)
+    private static final Logger LOG = LoggerFactory.getLogger(CreditCardController.class);
 
     @Resource
     CreditCardService creditCardService;
@@ -43,7 +46,9 @@ public class CreditCardController {
             String creditCardNum = payload.getCardNumber();
             int userId = payload.getUserId();
             String cardIssuanceBank = payload.getCardIssuanceBank();
+            LOG.debug("BEfore add credit card to user");
             int creditCardId = creditCardService.addCreditCardToUser(userId, creditCardNum, cardIssuanceBank);
+            LOG.debug("After adding");
             return new ResponseEntity<Integer>(creditCardId, HttpStatusCode.valueOf(200));
         }catch (BusinessException e){
             return new ResponseEntity<Integer>(400, HttpStatusCode.valueOf(400));
@@ -52,7 +57,7 @@ public class CreditCardController {
 
     @GetMapping("/credit-card:all")
     public ResponseEntity<List<CreditCardView>> getAllCardOfUser(@RequestParam int userId) {
-        // TODO: return a list of all credit card associated with the given userId, using CreditCardView class
+        //       return a list of all credit card associated with the given userId, using CreditCardView class
         //       if the user has no credit card, return empty list, never return null
         try{
             List<CreditCardView> creditCardViewList = userService.getAllCardOfUser(userId);
@@ -64,7 +69,7 @@ public class CreditCardController {
 
     @GetMapping("/credit-card:user-id")
     public ResponseEntity<Integer> getUserIdForCreditCard(@RequestParam String creditCardNumber) {
-        // TODO: Given a credit card number, efficiently find whether there is a user associated with the credit card
+        //       Given a credit card number, efficiently find whether there is a user associated with the credit card
         //       If so, return the user id in a 200 OK response. If no such user exists, return 400 Bad Request
         try{
             int userId = creditCardService.getUserIdForCreditCard(creditCardNumber);
@@ -76,7 +81,7 @@ public class CreditCardController {
 
     @PostMapping("/credit-card:update-balance")
     public ResponseEntity<String[]> postTransactionForCreditCard(@RequestBody UpdateBalancePayload[] payload) {
-        //TODO: Given a list of transactions, update credit cards' balance history.
+        //      Given a list of transactions, update credit cards' balance history.
         //      For example: if today is 4/12, a credit card's balanceHistory is [{date: 4/12, balance: 110}, {date: 4/10, balance: 100}],
         //      Given a transaction of {date: 4/10, amount: 10}, the new balanceHistory is
         //      [{date: 4/12, balance: 120}, {date: 4/11, balance: 110}, {date: 4/10, balance: 110}]

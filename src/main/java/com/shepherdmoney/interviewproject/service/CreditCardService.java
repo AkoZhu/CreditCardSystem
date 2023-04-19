@@ -23,24 +23,9 @@ public class CreditCardService {
     @Resource
     UserRepository userRepository;
 
-    @Resource
-    BalanceHistoryRepository balanceHistoryRepository;
-
-    public CreditCard getCreditCardByUserAndNumber(User user, String number){
-        return creditCardRepository.getCreditCardByUserAndNumber(user, number);
-    }
-
-    public CreditCard getCreditCardByUserIdAndNumber(int userId, String number){
-        User user = userRepository.getUserById(userId);
-        if(user == null){
-            return null;
-        }
-        return getCreditCardByUserAndNumber(user, number);
-    }
-
 
     public CreditCard getCreditCardById(int id){
-        return creditCardRepository.findById(id).orElse(null);
+        return creditCardRepository.getCreditCardById(id);
     }
 
     public CreditCard getCreditCardByNumber(String number){
@@ -74,8 +59,12 @@ public class CreditCardService {
             if(user == null){
                 throw new BusinessException(BusinessExceptionCode.USER_NOT_FOUND);
             }
-            CreditCard creditCard = addCreditCard(cardNumber, cardIssuanceBank);
+            CreditCard creditCard = new CreditCard();
+            creditCard.setNumber(cardNumber);
+            creditCard.setIssuanceBank(cardIssuanceBank);
             user.addCreditCard(creditCard);
+
+            creditCardRepository.save(creditCard);
 
             return creditCard.getId();
         }catch (Exception e){
@@ -90,10 +79,14 @@ public class CreditCardService {
             if(user == null){
                 throw new BusinessException(BusinessExceptionCode.USER_NOT_FOUND);
             }
-            CreditCard creditCard = getCreditCardByUserIdAndNumber(userId, cardNumber);
+            CreditCard creditCard = getCreditCardByNumber(cardNumber);
             if(creditCard == null){
                 throw new BusinessException(BusinessExceptionCode.CARD_NOT_FOUND);
             }
+            if(user.getId() != creditCard.getUser().getId()){
+                throw new BusinessException(BusinessExceptionCode.CARD_NOT_BELONG_TO_USER);
+            }
+
             user.removeCreditCard(creditCard);
         }catch (Exception e){
             LOG.error("Error in deleteCreditCardFromUser: " + e.getMessage());

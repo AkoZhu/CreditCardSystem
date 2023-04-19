@@ -1,5 +1,8 @@
 package com.shepherdmoney.interviewproject.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,14 +11,14 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Table(name = "My_User")
+@Table(name = "MY_USER")
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class)
 public class User {
 
     @Id
@@ -28,12 +31,12 @@ public class User {
     @Column(name= "EMAIL")
     private String email;
 
-    // TODO: User's credit card
+    //  User's credit card
     // HINT: A user can have one or more, or none at all. We want to be able to query credit cards by user
     //       and user by a credit card.
 
     // Assume a credit card needs to have a user. -> orphanRemoval = true
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<CreditCard> creditCardList = new ArrayList<>();
 
 

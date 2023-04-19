@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("CreditCardRepo")
 public interface CreditCardRepository extends JpaRepository<CreditCard, Integer> {
+
+    CreditCard getCreditCardById(int id);
     CreditCard getCreditCardByUserAndNumber(User user, String creditCardNum);
 
     CreditCard getCreditCardByNumber(String creditCardNum);

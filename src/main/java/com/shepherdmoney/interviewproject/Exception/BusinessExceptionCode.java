@@ -7,6 +7,8 @@ public enum BusinessExceptionCode {
 
     CARD_ALREADY_EXIST("Credit card already exists."),
 
+    CARD_NOT_BELONG_TO_USER("Credit card does not belong to user."),
+
     CARD_NOT_FOUND("Credit card is not found."),
 
     CARD_ADD_FAILED("Credit card add failed."),
