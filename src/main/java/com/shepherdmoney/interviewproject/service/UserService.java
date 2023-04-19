@@ -21,35 +21,23 @@ public class UserService {
     @Resource
     UserRepository userRepository;
 
+    public User createUser(User user) throws BusinessException {
+        // Possible Error when the user has the same name and email.
+        // Maybe some attack, so I use Log to record the error.
+        // But we don't throw error because the PK is ID.
+        String name = user.getName();
+        String email = user.getEmail();
 
-    public User addUser(User user) throws BusinessException {
+        User testUser = userRepository.getUserByNameAndEmail(name, email);
+        if(testUser != null){
+            LOG.info("Potential Error: Try to create the user with same name and email in DB.");
+            LOG.info("User id: " + testUser.getId() +  "; name: " + name + "; email: " + email);
+        }
+
         if(userRepository.getUserById(user.getId()) != null){
             throw new BusinessException(BusinessExceptionCode.USER_ALREADY_EXIST);
         }
         return userRepository.save(user);
-    }
-
-    public User createUser(String name, String email) throws BusinessException {
-        try{
-            User user = new User();
-            user.setName(name);
-            user.setEmail(email);
-
-            // Possible Error when the user has the same name and email.
-            // Maybe some attack, so I use Log to record the error.
-            // But we don't throw error because the PK is ID.
-            User testUser = userRepository.getUserByNameAndEmail(name, email);
-            if(testUser != null){
-                LOG.info("Potential Error: Try to create the user with same name and email in DB.");
-                LOG.info("User id: " + testUser.getId() +  "; name: " + name + "; email: " + email);
-            }
-
-            user = addUser(user);
-            return user;
-        }catch (Exception e){
-            LOG.error("Error in createUser: " +  e.getMessage());
-            throw new BusinessException(BusinessExceptionCode.CREATE_USER_FAILED);
-        }
     }
 
     public User getUserById(int userId){
@@ -67,26 +55,12 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-    public void deleteUser(int userId) throws BusinessException {
-        try{
-            deleteUserById(userId);
-        }catch (Exception e) {
-            LOG.error("Error in deleteUser: " + e.getMessage());
-            throw new BusinessException(BusinessExceptionCode.DELETE_USER_FAILED);
-        }
-    }
-
     public List<CreditCard> getCreditCardsByUserId(int userId) throws BusinessException {
-        try{
-            User user = getUserById(userId);
-            if(user == null){
-                throw new BusinessException(BusinessExceptionCode.USER_NOT_FOUND);
-            }
-            return user.getCreditCardList();
-        }catch (Exception e){
-            LOG.error("Error in getCreditCardsByUserId: " + e.getMessage());
-            throw new BusinessException(BusinessExceptionCode.GET_CREDIT_CARDS_FAILED);
+        User user = getUserById(userId);
+        if(user == null){
+            throw new BusinessException(BusinessExceptionCode.USER_NOT_FOUND);
         }
+        return user.getCreditCardList();
     }
 
     public List<CreditCardView> creditCardToView(List<CreditCard> creditCardList) throws BusinessException {
@@ -106,32 +80,7 @@ public class UserService {
     }
 
     public List<CreditCardView> getAllCardOfUser(int userId) throws BusinessException {
-        try{
-            List<CreditCard> creditCardList = getCreditCardsByUserId(userId);
-            return creditCardToView(creditCardList);
-        }catch (Exception e){
-            LOG.error("Error in getAllCardOfUser: " + e.getMessage());
-            throw new BusinessException(BusinessExceptionCode.GET_CREDIT_CARDS_FAILED);
-        }
+        List<CreditCard> creditCardList = getCreditCardsByUserId(userId);
+        return creditCardToView(creditCardList);
     }
-
-//    public User addCreditCardToUser(int userId, CreditCard creditCard){
-//        User user = getUserById(userId);
-//        if(user == null){
-//            throw new BussinessException(BusinessExceptionCode.USER_NOT_FOUND);
-//        }
-//        user.addCreditCard(creditCard);
-//        return userRepository.save(user);
-//    }
-
-//    public User removeCreditCardFromUser(int userId, CreditCard creditCard){
-//        User user = getUserById(userId);
-//        if(user == null){
-//            throw new BussinessException(BusinessExceptionCode.USER_NOT_FOUND);
-//        }
-//        user.removeCreditCard(creditCard);
-//        return userRepository.save(user);
-//    }
-
-
 }

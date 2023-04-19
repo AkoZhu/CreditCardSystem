@@ -28,7 +28,7 @@ public class CreditCard {
     @Column(name = "NUMBER", unique = true, nullable = false)
     private String number;
 
-    // TODO: Credit card's owner. For detailed hint, please see User class
+    //  Credit card's owner. For detailed hint, please see User class
     @ManyToOne
     @JoinColumn(name="USER_ID",  referencedColumnName = "ID")
     private User user;

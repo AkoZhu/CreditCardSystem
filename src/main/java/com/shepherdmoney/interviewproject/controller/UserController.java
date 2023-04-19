@@ -4,6 +4,8 @@ import com.shepherdmoney.interviewproject.model.User;
 import com.shepherdmoney.interviewproject.service.UserService;
 import com.shepherdmoney.interviewproject.vo.request.CreateUserPayload;
 import jakarta.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     // wire in the user repository (~ 1 line)
+    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
+
     @Resource
     UserService userService;
 
@@ -24,9 +28,16 @@ public class UserController {
             String name = payload.getName();
             String email = payload.getEmail();
 
-            User newUser = userService.createUser(name, email);
+            User newUser = new User();
+            newUser.setName(name);
+            newUser.setEmail(email);
+
+            newUser = userService.createUser(newUser);
+
             return new ResponseEntity<Integer>(newUser.getId(), HttpStatusCode.valueOf(200));
         }catch (Exception e){
+            LOG.error("Error creating user: " + e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity<Integer>(400, HttpStatusCode.valueOf(400));
         }
     }
@@ -37,9 +48,11 @@ public class UserController {
         //       Return 400 Bad Request if a user with the ID does not exist
         //       The response body could be anything you consider appropriate
         try{
-            userService.deleteUser(userId);
+            userService.deleteUserById(userId);
             return new ResponseEntity<String>("User deleted", HttpStatusCode.valueOf(200));
         }catch (Exception e){
+            LOG.error("Error deleting user: " + e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity<String>(e.getMessage(), HttpStatusCode.valueOf(400));
         }
     }

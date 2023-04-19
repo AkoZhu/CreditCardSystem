@@ -29,11 +29,6 @@ public class BalanceHistoryService {
         return balanceHistoryRepository.findById(id).orElse(null);
     }
 
-
-    public BalanceHistory addBalanceHistory(BalanceHistory balanceHistory){
-        return balanceHistoryRepository.save(balanceHistory);
-    }
-
     public void deleteBalanceHistoryById(int id) throws Exception{
         if(balanceHistoryRepository.getBalanceHistoryById(id) == null){
             throw new BusinessException(BusinessExceptionCode.BALANCE_HISTORY_NOT_EXIST);
@@ -48,28 +43,7 @@ public class BalanceHistoryService {
         }
 
         creditCard.addBalanceHistory(balanceHistory);
-        return addBalanceHistory(balanceHistory);
+        return balanceHistoryRepository.save(balanceHistory);
     }
 
-    public BalanceHistory addBalanceHistoryToCreditCard(String creditCardNumber, Instant date, double balance) throws BusinessException{
-        BalanceHistory newBalanceHistory = new BalanceHistory();
-        newBalanceHistory.setDate(date);
-        newBalanceHistory.setBalance(balance);
-        return addBalanceHistoryToCreditCard(creditCardNumber, newBalanceHistory);
-    }
-
-    public String[] addBalanceHistoryByPayloadList(UpdateBalancePayload[] payloads) throws BusinessException{
-        String[] result = new String[payloads.length];
-        for(int i = 0; i < payloads.length; i++){
-            UpdateBalancePayload currentPayload = payloads[i];
-            try{
-                addBalanceHistoryToCreditCard(currentPayload.getCreditCardNumber(), currentPayload.getTransactionTime(), currentPayload.getCurrentBalance());
-                result[i] = "Success:" + currentPayload.getCreditCardNumber() + ";" + currentPayload.getTransactionTime() + ";" + currentPayload.getCurrentBalance();
-            }catch (BusinessException e){
-                LOG.error("Error in addBalanceHistoryByPayloadList: " + e.getMessage());
-                throw new BusinessException(BusinessExceptionCode.CARD_NOT_FOUND);
-            }
-        }
-        return result;
-    }
 }

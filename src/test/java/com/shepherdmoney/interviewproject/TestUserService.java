@@ -37,15 +37,15 @@ public class TestUserService {
         testUser.setEmail("testUser@gmail.com");
     }
 
-    @DisplayName("Test addUser")
+    @DisplayName("Test createUser")
     @Test
-    public void testAddUser() {
+    public void testCreateUser() {
         when(userRepository.save(testUser)).thenReturn(testUser);
         when(userRepository.getUserById(testUser.getId())).thenReturn(null);
-        Assertions.assertEquals(testUser, userService.addUser(testUser));
+        Assertions.assertEquals(testUser, userService.createUser(testUser));
 
         when(userRepository.getUserById(testUser.getId())).thenReturn(testUser);
-        Assertions.assertThrows(BusinessException.class, () -> userService.addUser(testUser));
+        Assertions.assertThrows(BusinessException.class, () -> userService.createUser(testUser));
     }
 
     @DisplayName("Test getCreditCardByUserId")

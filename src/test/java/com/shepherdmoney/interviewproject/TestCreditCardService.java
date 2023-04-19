@@ -4,7 +4,9 @@ import com.shepherdmoney.interviewproject.Exception.BusinessException;
 import com.shepherdmoney.interviewproject.model.CreditCard;
 import com.shepherdmoney.interviewproject.model.User;
 import com.shepherdmoney.interviewproject.repository.CreditCardRepository;
+import com.shepherdmoney.interviewproject.repository.UserRepository;
 import com.shepherdmoney.interviewproject.service.CreditCardService;
+import com.shepherdmoney.interviewproject.service.UserService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,6 +23,12 @@ public class TestCreditCardService {
 
     @InjectMocks
     private CreditCardService creditCardService;
+
+    @Mock
+    UserRepository userRepository;
+
+    @InjectMocks
+    private UserService userService;
 
     static CreditCard testCreditCard;
     static User testUser;
@@ -47,4 +55,14 @@ public class TestCreditCardService {
        when(creditCardRepository.getCreditCardByNumber(testCreditCard.getNumber())).thenReturn(null);
        Assertions.assertThrows(BusinessException.class, () -> creditCardService.getUserIdForCreditCard(testCreditCard.getNumber()));
     }
+
+    @DisplayName("test add CreditCard to user.")
+    @Test
+    public void testAddCreditCardToUser() {
+        when(creditCardRepository.save(testCreditCard)).thenReturn(testCreditCard);
+        when(userRepository.getUserById(testUser.getId())).thenReturn(testUser);
+        Assertions.assertEquals(testCreditCard.getId(), creditCardService.addCreditCardToUser(testCreditCard.getId(), testCreditCard ));
+    }
+
+
 }
