@@ -11,5 +11,5 @@ public class UpdateBalancePayload {
     
     private Instant transactionTime;
 
-    private double currentBalance;
+    private double amount;
 }

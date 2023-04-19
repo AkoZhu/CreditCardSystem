@@ -2,12 +2,15 @@ package com.shepherdmoney.interviewproject.service;
 
 import com.shepherdmoney.interviewproject.Exception.BusinessExceptionCode;
 import com.shepherdmoney.interviewproject.Exception.BusinessException;
+import com.shepherdmoney.interviewproject.model.BalanceHistory;
 import com.shepherdmoney.interviewproject.model.CreditCard;
 import com.shepherdmoney.interviewproject.model.User;
 import com.shepherdmoney.interviewproject.repository.CreditCardRepository;
 import com.shepherdmoney.interviewproject.repository.UserRepository;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CreditCardService {
@@ -72,4 +75,12 @@ public class CreditCardService {
         return creditCard.getUser().getId();
     }
 
+
+    public List<BalanceHistory> getBalanceHistoryListByCardNumber(String cardNumber) throws BusinessException {
+        CreditCard creditCard = getCreditCardByNumber(cardNumber);
+        if (creditCard == null) {
+            throw new BusinessException(BusinessExceptionCode.CARD_NOT_FOUND);
+        }
+        return creditCard.getBalanceHistoryList();
+    }
 }

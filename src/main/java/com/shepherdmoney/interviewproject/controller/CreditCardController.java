@@ -102,15 +102,41 @@ public class CreditCardController {
             for(UpdateBalancePayload p : payload){
                 String creditCardNumber = p.getCreditCardNumber();
                 Instant date = p.getTransactionTime();
-                double balance = p.getCurrentBalance();
+                double amount = p.getAmount();
 
+                // get current BalanceHistory
+                BalanceHistory currentBalanceHistory = new BalanceHistory();
+                currentBalanceHistory.setDate(Instant.EPOCH);
+                currentBalanceHistory.setBalance(0.0);
+
+                List<BalanceHistory> balanceHistoryList = creditCardService.getBalanceHistoryListByCardNumber(creditCardNumber);
+                if(balanceHistoryList.size() != 0){
+                    currentBalanceHistory = balanceHistoryList.get(balanceHistoryList.size() - 1);
+                }
+
+                // Skip the current transacntion when time is not correct
+                if(currentBalanceHistory.getDate().isAfter(date)){
+                    String res = "Error: " + creditCardNumber + " " + date + " " + amount;
+                    resList.add(res);
+                    continue;
+                }
+
+                // Skip the transaction when amount is not correct.
+                if(currentBalanceHistory.getBalance() + amount < 0){
+                    LOG.error("Error in posting transaction because: " + "balance: " + currentBalanceHistory.getBalance() + "; amount: " + amount);
+                    String res = "Error: " + creditCardNumber + " " + date + " " + amount;
+                    resList.add(res);
+                    continue;
+                }
+
+                //
                 BalanceHistory balanceHistory = new BalanceHistory();
-                balanceHistory.setBalance(balance);
+                balanceHistory.setBalance(currentBalanceHistory.getBalance() + amount);
                 balanceHistory.setDate(date);
 
                 balanceHistory = balanceHistoryService.addBalanceHistoryToCreditCard(creditCardNumber, balanceHistory);
 
-                String res = "Success: " + creditCardNumber + " " + date + " " + balance;
+                String res = "Success: " + creditCardNumber + " " + date + " " + amount + "; currentBalance:" + balanceHistory.getBalance();
                 resList.add(res);
             }
             return new ResponseEntity<List<String>>(resList, HttpStatusCode.valueOf(200));
